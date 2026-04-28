@@ -22,3 +22,19 @@ class RecipeDetailHappyTestCase(APITestCase):
         url = reverse('recipe-detail', kwargs={'pk': recipe.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+class RecipeDetailUnhappyTestCase(APITestCase):
+    """Unhappy path tests for /recipes-detail/<id>/ endpoint"""
+
+    def test_get_recipe_detail_without_auth(self):
+        user = User.objects.create_user(username='detailuser', password='testpass123')
+
+        recipe = Recipe.objects.create(
+            title='Detail Recipe',
+            description='Recipe for detail test',
+            author=user
+        )
+        
+        url = reverse('recipe-detail', kwargs={'pk': recipe.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
